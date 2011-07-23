@@ -9,8 +9,8 @@ class ChallengeSignupsController < ApplicationController
   before_filter :load_challenge, :except => [:index]
   before_filter :load_signup_from_id, :only => [:show, :edit, :update, :destroy, :confirm_delete]
   before_filter :allowed_to_destroy, :only => [:destroy, :confirm_delete]
-  before_filter :signup_owner_only, :only => [:edit, :update]
-  before_filter :maintainer_or_signup_owner_only, :only => [:show]
+  before_filter :signup_owner_only, :only => [:edit]
+  before_filter :maintainer_or_signup_owner_only, :only => [:show, :update]
   before_filter :check_signup_open, :only => [:new, :create, :edit, :update]
   before_filter :check_pseud_ownership, :only => [:create, :update]
 
@@ -40,7 +40,7 @@ class ChallengeSignupsController < ApplicationController
   end
     
   def signup_owner_only
-    not_signup_owner and return unless @challenge_signup.pseud.user == current_user || signup_closed_owner?
+    not_signup_owner and return unless (@challenge_signup.pseud.user == current_user || (@collection.challenge_type == "GiftExchange" && !@challenge.signup_open && @collection.user_is_owner?(current_user)))
   end
 
   def maintainer_or_signup_owner_only

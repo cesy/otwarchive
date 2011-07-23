@@ -7,7 +7,8 @@ class PromptsController < ApplicationController
   before_filter :load_signup, :except => [:index, :destroy, :show]
   # before_filter :promptmeme_only, :except => [:index, :new]
   before_filter :allowed_to_destroy, :only => [:destroy]
-  before_filter :signup_owner_only, :only => [:edit, :update]
+  before_filter :signup_owner_only, :only => [:edit]
+  before_filter :maintainer_or_signup_owner_only, :only => [:show, :update, :destroy]
   before_filter :check_signup_open, :only => [:new, :create, :edit, :update]
 
   # def promptmeme_only
@@ -95,6 +96,9 @@ class PromptsController < ApplicationController
   end
 
   def new
+    unless (@challenge_signup = ChallengeSignup.in_collection(@collection).by_user(current_user).first)
+      @challenge_signup = ChallengeSignup.new
+    end
     if params[:prompt_type] == "offer"
       @index = @challenge_signup.offers.count
       @prompt = @challenge_signup.offers.build
