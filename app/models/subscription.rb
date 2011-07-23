@@ -26,6 +26,8 @@ class Subscription < ActiveRecord::Base
       subscribable.name
     elsif subscribable.respond_to?(:title)
       subscribable.title
+    elsif subscribable.respond_to?(:collection)
+      subscribable.collection + " prompt"
     end
   end
   

@@ -267,6 +267,27 @@ class UserMailer < BulletproofMailer::Base
   end
 
   ### WORKS NOTIFICATIONS ###
+  
+  # Sends email when an author that user is subscribed to posts a work
+  def subscription_notification(user_id, subscription_id, creation_id, creation_class_name)
+    user = User.find(user_id)
+    @subscription = Subscription.find(subscription_id)
+    @creation = creation_class_name.constantize.find(creation_id)
+    if @subscription.subscribable_type == 'User'
+      subject_text = "#{@subscription.name} has posted "
+      if creation_class_name == 'Chapter'
+        subject_text << "Chapter #{@creation.position} of \"#{@creation.work.title}\""
+      elsif creation_class_name == 'Work'
+        subject_text << "\"#{@creation.title}\""
+      end
+    else
+      subject_text = "Subscription Notice for #{@subscription.name}"
+    end
+    mail(
+      :to => user.email,
+      :subject => "[#{ArchiveConfig.APP_NAME}] #{subject_text}"
+    )
+  end
 
   # Sends email when a user is added as a co-author
   def coauthor_notification(user_id, creation_id, creation_class_name)

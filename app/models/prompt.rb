@@ -43,6 +43,12 @@ class Prompt < ActiveRecord::Base
   # CALLBACKS
 
   before_destroy :clear_claims
+  
+  has_many :prompt_subscriptions, :dependent => :destroy
+  has_many :prompt_subscribers,
+            :through => :prompt_followings,
+            :source => :user
+            
   def clear_claims
     # remove this prompt reference from any existing assignments
     request_claims.each {|claim| claim.destroy}

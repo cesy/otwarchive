@@ -156,6 +156,7 @@ class User < ActiveRecord::Base
 
   has_many :bookmark_tags, through: :bookmarks, source: :tags
 
+  # author subscriptions
   has_many :subscriptions, dependent: :destroy
   has_many :followings,
            class_name: "Subscription",
@@ -166,8 +167,17 @@ class User < ActiveRecord::Base
            source: :subscribable,
            source_type: "User"
   has_many :subscribers,
-           through: :followings,
-           source: :user
+            through: :followings,
+            source: :user
+  # prompt subscriptions
+  has_many :prompt_followings,
+            :class_name => 'Subscription',
+            :as => :subscribable,
+            :dependent => :destroy
+  has_many :followed_prompts,
+            :through => :prompt_subscriptions,
+            :source => :subscribable,
+            :source_type => 'Prompt'
 
   has_many :wrangling_assignments, dependent: :destroy
   has_many :fandoms, through: :wrangling_assignments
@@ -452,7 +462,7 @@ class User < ActiveRecord::Base
   def is_sole_author_of?(item)
    other_pseuds = item.pseuds.find(:all) - self.pseuds
    self.is_author_of?(item) && other_pseuds.blank?
- end
+  end
 
   # Returns array of works where the user is the sole author
   def sole_authored_works
@@ -563,7 +573,7 @@ class User < ActiveRecord::Base
     end
   end
 
-   def log_change_if_login_was_edited
-     create_log_item(options = { action: ArchiveConfig.ACTION_RENAME, note: "Old Username: #{login_was}; New Username: #{login}" }) if login_changed?
-   end
+  def log_change_if_login_was_edited
+    create_log_item(options = { action: ArchiveConfig.ACTION_RENAME, note: "Old Username: #{login_was}; New Username: #{login}" }) if login_changed?
+  end
 end
