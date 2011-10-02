@@ -34,6 +34,7 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.integer  "language_id"
   end
 
+  add_index "admin_posts", ["created_at"], :name => "index_admin_posts_on_created_at"
   add_index "admin_posts", ["translated_post_id"], :name => "index_admin_posts_on_post_id"
 
   create_table "admin_settings", :force => true do |t|
@@ -135,6 +136,8 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "challenge_claims", ["creation_id", "creation_type"], :name => "creations"
 
   create_table "challenge_signups", :force => true do |t|
     t.integer  "collection_id"
