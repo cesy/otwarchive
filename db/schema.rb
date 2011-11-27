@@ -10,7 +10,7 @@
 #
 # It's strongly recommended to check this file into your version control system.
 
-ActiveRecord::Schema.define(:version => 20110908191743) do
+ActiveRecord::Schema.define(:version => 20111027173425) do
 
   create_table "abuse_reports", :force => true do |t|
     t.string   "email"
@@ -21,6 +21,20 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.string   "ip_address"
     t.string   "category"
     t.integer  "comment_sanitizer_version", :limit => 2, :default => 0, :null => false
+  end
+
+  create_table "admin_post_taggings", :force => true do |t|
+    t.integer  "admin_post_tag_id"
+    t.integer  "admin_post_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
+  create_table "admin_post_tags", :force => true do |t|
+    t.string   "name"
+    t.integer  "language_id"
+    t.datetime "created_at"
+    t.datetime "updated_at"
   end
 
   create_table "admin_posts", :force => true do |t|
@@ -55,6 +69,7 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.boolean  "guest_downloading_off",                      :default => false,                 :null => false
     t.text     "banner_text"
     t.integer  "banner_text_sanitizer_version", :limit => 2, :default => 0,                     :null => false
+    t.integer  "default_skin_id"
   end
 
   add_index "admin_settings", ["last_updated_by"], :name => "index_admin_settings_on_last_updated_by"
@@ -774,6 +789,8 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.boolean  "relationship_restrict_to_fandom",  :default => false, :null => false
     t.boolean  "character_restrict_to_tag_set",    :default => false, :null => false
     t.boolean  "relationship_restrict_to_tag_set", :default => false, :null => false
+    t.boolean  "title_required",                   :default => false, :null => false
+    t.boolean  "title_allowed",                    :default => false, :null => false
   end
 
   create_table "prompts", :force => true do |t|
@@ -902,6 +919,14 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.datetime "updated_at"
   end
 
+  create_table "skin_parents", :force => true do |t|
+    t.integer  "child_skin_id"
+    t.integer  "parent_skin_id"
+    t.integer  "position"
+    t.datetime "created_at"
+    t.datetime "updated_at"
+  end
+
   create_table "skins", :force => true do |t|
     t.string   "title"
     t.integer  "author_id"
@@ -929,6 +954,15 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.float    "paragraph_margin"
     t.string   "headercolor"
     t.string   "accent_color"
+    t.string   "role"
+    t.string   "media"
+    t.string   "ie_condition"
+    t.string   "filename"
+    t.boolean  "do_not_upgrade",                             :default => false, :null => false
+    t.boolean  "cached",                                     :default => false, :null => false
+    t.boolean  "unusable",                                   :default => false, :null => false
+    t.boolean  "featured",                                   :default => false, :null => false
+    t.boolean  "in_chooser",                                 :default => false, :null => false
   end
 
   add_index "skins", ["author_id"], :name => "index_skins_on_author_id"
@@ -942,6 +976,9 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.datetime "created_at"
     t.datetime "updated_at"
   end
+
+  add_index "subscriptions", ["subscribable_id", "subscribable_type"], :name => "subscribable"
+  add_index "subscriptions", ["user_id"], :name => "user_id"
 
   create_table "tag_nominations", :force => true do |t|
     t.string   "type"
@@ -1097,14 +1134,15 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.datetime "activated_at"
     t.string   "crypted_password"
     t.string   "salt"
-    t.string   "identity_url",      :limit => 191
-    t.boolean  "recently_reset",                   :default => false, :null => false
-    t.boolean  "suspended",                        :default => false, :null => false
-    t.boolean  "banned",                           :default => false, :null => false
+    t.string   "identity_url",       :limit => 191
+    t.boolean  "recently_reset",                    :default => false, :null => false
+    t.boolean  "suspended",                         :default => false, :null => false
+    t.boolean  "banned",                            :default => false, :null => false
     t.integer  "invitation_id"
     t.datetime "suspended_until"
-    t.boolean  "out_of_invites",                   :default => true,  :null => false
-    t.string   "persistence_token",                                   :null => false
+    t.boolean  "out_of_invites",                    :default => true,  :null => false
+    t.string   "persistence_token",                                    :null => false
+    t.integer  "failed_login_count"
   end
 
   add_index "users", ["activation_code"], :name => "index_users_on_activation_code"
@@ -1142,12 +1180,11 @@ ActiveRecord::Schema.define(:version => 20110908191743) do
     t.integer  "work_skin_id"
   end
 
+  add_index "works", ["complete", "posted", "hidden_by_admin"], :name => "complete_works"
   add_index "works", ["delta"], :name => "index_works_on_delta"
-  add_index "works", ["hidden_by_admin"], :name => "index_works_on_hidden_by_admin"
   add_index "works", ["imported_from_url"], :name => "index_works_on_imported_from_url"
   add_index "works", ["language_id"], :name => "index_works_on_language_id"
-  add_index "works", ["posted"], :name => "index_works_on_posted"
-  add_index "works", ["restricted"], :name => "index_works_on_restricted"
+  add_index "works", ["restricted", "posted", "hidden_by_admin"], :name => "visible_works"
   add_index "works", ["revised_at"], :name => "index_works_on_revised_at"
 
   create_table "wrangling_assignments", :force => true do |t|
