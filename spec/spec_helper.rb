@@ -9,6 +9,8 @@ require 'rspec/rails'
 require 'factory_girl'
 require 'database_cleaner'
 require 'email_spec'
+require 'coveralls'
+Coveralls.wear!
 
 DatabaseCleaner.start
 
