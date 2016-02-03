@@ -248,6 +248,9 @@ GEM
       cocaine (~> 0.5.5)
       mime-types
       mimemagic (= 0.3.0)
+    parallel (1.6.1)
+    parallel_tests (2.3.1)
+      parallel
     permit_yo (2.1.4)
       activesupport (~> 3.0)
     phraseapp-in-context-editor-ruby (1.0.6)
@@ -501,6 +504,7 @@ DEPENDENCIES
   nokogiri (>= 1.7.1)
   nokogumbo (= 1.4.9)
   paperclip
+  parallel_tests
   permit_yo
   phraseapp-in-context-editor-ruby (>= 1.0.6)
   pickle

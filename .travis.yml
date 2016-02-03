@@ -4,22 +4,22 @@ cache: bundler
 sudo: required
 env:
   - TEST_GROUP="./script/check_syntax"
-  - TEST_GROUP="rspec spec"
-  - TEST_GROUP="cucumber -r features features/admins             -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/bookmarks          -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/collections        -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/comments_and_kudos -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/gift_exchanges     -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/importing          -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/other_a            -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/other_b            -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/prompt_memes_a     -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/prompt_memes_b     -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/prompt_memes_c     -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/tag_sets           -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/tags_and_wrangling -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/users              -f Ao3Cucumber::Formatter --color"
-  - TEST_GROUP="cucumber -r features features/works              -f Ao3Cucumber::Formatter --color"
+  - TEST_GROUP="rake parallel:spec"
+  - TEST_GROUP="rake parallel:features[^features/admins]                -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/bookmarks]             -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/collections]           -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/comments_and_kudos]    -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/gift_exchanges]        -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/importing]             -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/other_a]               -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/other_b]               -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/prompt_memes_a]        -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/prompt_memes_b]        -f Ao3Cucumber::Formatter --color""
+  - TEST_GROUP="rake parallel:features[^features/prompt_memes_c]"
+  - TEST_GROUP="rake parallel:features[^features/tag_sets]"
+  - TEST_GROUP="rake parallel:features[^features/tags_and_wrangling]"
+  - TEST_GROUP="rake parallel:features[^features/users]"
+  - TEST_GROUP="parallel_cucumber -- -f progress -r features -- features/works"
 rvm:
   - "2.2.5"
 services:
@@ -27,8 +27,9 @@ services:
   - redis-server
   - memcached
 script:
-  - RAILS_ENV=test bundle exec rake db:schema:load --trace
-  - RAILS_ENV=test bundle exec rake db:migrate --trace
+  - RAILS_ENV=test bundle exec rake parallel:create --trace
+  - RAILS_ENV=test bundle exec rake parallel:load_schema --trace
+  - RAILS_ENV=test bundle exec rake parallel:migrate --trace
   - travis_retry bundle exec $TEST_GROUP
 before_script:
   - bash script/travis_configure.sh
