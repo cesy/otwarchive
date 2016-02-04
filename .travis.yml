@@ -27,6 +27,7 @@ services:
   - redis-server
   - memcached
 script:
+  - export COVERALLS_PARALLEL=true
   - RAILS_ENV=test bundle exec rake parallel:create --trace
   - RAILS_ENV=test bundle exec rake parallel:load_schema --trace
   - RAILS_ENV=test bundle exec rake parallel:migrate --trace
@@ -42,7 +43,8 @@ notifications:
     on_success: change
     on_failure: always
   irc:
-   channels:
-     - "irc.freenode.org#otw-dev"
-   on_success: change
-   on_failure: change
+    channels:
+      - "irc.freenode.org#otw-dev"
+    on_success: change
+    on_failure: change
+  webhooks: https://coveralls.io/webhook?repo_token=COVERALLS_REPO_TOKEN
