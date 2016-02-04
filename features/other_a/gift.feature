@@ -12,6 +12,8 @@ Feature: Create Gifts
       | giftee1    | something   | giftee1@foo.com  |
       | giftee2    | something   | giftee2@foo.com  |
       | associate  | something   | associate@foo.com |
+      And user "giftee1" prefers locale "en"
+      And user "giftee2" prefers locale "en"
       And I am logged in as "gifter" with password "something"
       And I set up the draft "GiftStory1"
 

@@ -38,7 +38,8 @@ Feature: Admin Actions for Works and Bookmarks
       And 0 emails should be delivered
 
   Scenario: Can delete works
-    Given I am logged in as "regular_user"
+    Given basic languages
+      And I am logged in as "regular_user" with locale "en"
       And I post the work "ToS Violation"
     When I am logged in as an admin
       And I view the work "ToS Violation"
@@ -56,7 +57,7 @@ Feature: Admin Actions for Works and Bookmarks
 
   Scenario: Can hide bookmarks
     Given basic tags
-      And I am logged in as "regular_user" with password "password1"
+      And I am logged in as "regular_user"
       And I post the work "A Nice Work"
     When I am logged in as "bad_user"
       And I view the work "A Nice Work"
@@ -68,7 +69,7 @@ Feature: Admin Actions for Works and Bookmarks
       And I am on bad_user's bookmarks page
     When I follow "Hide Bookmark"
     Then I should see "Item has been hidden."
-    When I am logged in as "regular_user" with password "password1"
+    When I am logged in as "regular_user"
       And I am on bad_user's bookmarks page
     Then I should not see "Rude comment"
 
@@ -148,20 +149,17 @@ Feature: Admin Actions for Works and Bookmarks
 
   Scenario: Can mark a comment as spam
     Given I have no works or comments
-      And the following activated users exist
-      | login         | password   |
-      | author        | password   |
-      | commenter     | password   |
       And the following admin exists
         | login       | password |
         | Zooey       | secret   |
 
     # set up a work with a genuine comment
 
-    When I am logged in as "author" with password "password"
+    Given basic languages
+    When I am logged in as "author" with locale "en"
       And I post the work "The One Where Neal is Awesome"
     When I am logged out
-      And I am logged in as "commenter" with password "password"
+      And I am logged in as "commenter" with locale "en"
       And I view the work "The One Where Neal is Awesome"
       And I fill in "Comment" with "I loved this!"
       And I press "Comment"
@@ -199,7 +197,7 @@ Feature: Admin Actions for Works and Bookmarks
     Then I should not see "rolex"
       And I should see "I loved this!"
     # author can still see that spam comment exists, but can't see content of it
-    When I am logged in as "author" with password "password"
+    When I am logged in as "author"
       And I view the work "The One Where Neal is Awesome"
     Then I should see "Comments (2)"
     When I follow "Comments (2)"

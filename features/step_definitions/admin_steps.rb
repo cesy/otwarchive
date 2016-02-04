@@ -58,11 +58,15 @@ end
 Given /^basic languages$/ do
   Language.default
   german = Language.find_or_create_by_short_and_name_and_support_available_and_abuse_support_available("DE", "Deutsch", true, true)
-  de = Locale.new
-  de.iso = 'de'
+  de = Locale.find_or_create_by_iso("de")
   de.name = 'Deutsch'
   de.language_id = german.id
   de.save!
+  english = Language.find_or_create_by_short_and_name("EN", "English")
+  en = Locale.find_or_create_by_iso("en")
+  en.name = 'English'
+  en.language_id = english.id
+  en.save!
 end
 
 Given /^advanced languages$/ do

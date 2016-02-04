@@ -43,9 +43,23 @@ Given /^the user "([^"]*)" exists and has the role "([^"]*)"/ do |login, role|
   user.save
 end
 
-Given /^I am logged in as "([^"]*)" with password "([^"]*)"(?:( with preferences set to hidden warnings and additional tags))?$/ do |login, password, hidden|
+Given /^I am logged in as "([^\"]*)" with password "([^\"]*)"(?: with locale "([^\"]*)")?(?:( with preferences set to hidden warnings and additional tags))?$/ do |login, password, locale, hidden|
   step("I am logged out")
-  user = find_or_create_new_user(login, password)
+  user = User.find_by_login(login)
+  if user.blank?
+    if locale.blank?
+      user = FactoryGirl.create(:user, {:login => login, :password => password})
+    else
+      user = FactoryGirl.create(:user, {:login => login, :password => password})
+      user.preference.preferred_locale = Locale.find_by_iso(locale).id
+      user.preference.save
+    end
+    user.activate
+  else
+    user.password = password
+    user.password_confirmation = password
+    user.save
+  end
   if hidden.present?
     user.preference.hide_warnings = true
     user.preference.hide_freeform = true
@@ -63,13 +77,26 @@ Given /^I am logged in as "([^"]*)"$/ do |login|
   step(%{I am logged in as "#{login}" with password "#{DEFAULT_PASSWORD}"})
 end
 
+Given /^I am logged in as "([^\"]*)" with locale "([^\"]*)"$/ do |login, locale|
+  step(%{I am logged in as "#{login}" with password "#{DEFAULT_PASSWORD}" with locale "#{locale}"})
+end
+
 Given /^I am logged in$/ do
   step(%{I am logged in as "#{DEFAULT_USER}"})
 end
 
 Given /^I am logged in as a random user$/ do
   name = "testuser#{User.count + 1}"
-  step(%{I am logged in as "#{name}" with password "#{DEFAULT_PASSWORD}"})
+  user = FactoryGirl.create(:user, :login => name, :password => DEFAULT_PASSWORD)
+  user.preference.preferred_locale = Locale.find_or_create_by_iso("en").id
+  user.preference.save
+  user.activate
+  visit login_path
+  fill_in "User name", :with => name
+  fill_in "Password", :with => DEFAULT_PASSWORD
+  check "Remember me"
+  click_button "Log In"
+  assert UserSession.find
 end
 
 Given /^I am logged in as a banned user$/ do
@@ -118,6 +145,12 @@ Given(/^I have coauthored a work as "(.*?)" with "(.*?)"$/) do |login, coauthor|
   author1 = FactoryGirl.create(:pseud, user: User.find_by_login(login))
   author2 = FactoryGirl.create(:pseud, user: User.find_by_login(coauthor))
   FactoryGirl.create(:work, authors: [author1, author2], posted: true, title: "Shared")
+end
+
+Given /^user "([^\"]*)" prefers locale "([^\"]*)"/ do |username, locale|
+  user = User.find_by_login(username)
+  user.preference.preferred_locale = Locale.find_or_create_by_iso(locale).id
+  user.preference.save
 end
 
 # WHEN

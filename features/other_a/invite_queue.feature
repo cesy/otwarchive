@@ -111,6 +111,8 @@ Feature: Invite queue management
     Then I should see "You are already logged in!"
 
     # user uses email invite
+    # locales required - default locale on prod is en and works fine, but in test it defaults to 1 and 1 isn't en
+    Given basic languages
     Given I am a visitor
     # "You've" removed from test due to escaping on apostrophes
     Then the email should contain "been invited to join our beta!"

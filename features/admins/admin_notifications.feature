@@ -5,7 +5,8 @@ Feature: Admin Actions for notifications
 	I want to be able to use the Admin Notifications screen
 
   Scenario: Send out an admin notice to all users
-  Given I have no users
+  Given basic languages
+    And I have no users
     And the following admin exists
       | login       | password |
       | Zooey       | secret   |
@@ -14,6 +15,8 @@ Feature: Admin Actions for notifications
       | enigel      | emailnotifications   | e@e.org |
       | otherfan    | hatesnotifications   | o@e.org |
     And all emails have been delivered
+    And user "enigel" prefers locale "en"
+    And user "otherfan" prefers locale "en"
 
   # otherfan turns off notifications
 

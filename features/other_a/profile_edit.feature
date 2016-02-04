@@ -8,6 +8,7 @@ Background:
   Given the following activated user exists
 	| login    | password   | email  	   |
 	| editname | password   | bar@ao3.org  |	
+  And user "editname" prefers locale "en"
   And I am logged in as "editname"
   And I want to edit my profile
 

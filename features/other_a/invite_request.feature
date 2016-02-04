@@ -44,7 +44,7 @@ Feature: Invite requests
   Scenario: Admin can grant request
 
     Given invitations are required
-      And I am logged in as "user1"
+      And I am logged in as "user1" with locale "en"
       And I request some invites
     When I view requests as an admin
       And I fill in "requests[user1]" with "2"
@@ -54,7 +54,7 @@ Feature: Invite requests
   Scenario: User is granted invites
 
     Given invitations are required
-      And I am logged in as "user1"
+      And I am logged in as "user1" with locale "en"
       And I request some invites
       And an admin grants the request
     When I try to invite a friend from my user page
@@ -65,7 +65,7 @@ Feature: Invite requests
   Scenario: User can send out invites they have been granted, and the recipient can sign up
 
     Given invitations are required
-      And I am logged in as "user1"
+      And I am logged in as "user1" with locale "en"
       And I request some invites
       And an admin grants the request
       And I try to invite a friend from my user page
