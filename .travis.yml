@@ -19,7 +19,7 @@ env:
   - TEST_GROUP="rake parallel:features[^features/tag_sets]"
   - TEST_GROUP="rake parallel:features[^features/tags_and_wrangling]"
   - TEST_GROUP="rake parallel:features[^features/users]"
-  - TEST_GROUP="parallel_cucumber -- -f progress -r features -- features/works"
+  - TEST_GROUP="rake parallel:features[^features/works]"
 rvm:
   - "2.2.5"
 services:
