@@ -3,7 +3,7 @@
 @works
 
 Feature: Download a work
-  @wip
+
   Scenario: Download an ordinary work
 
   Given the work "Tittle with doubble letters"
@@ -109,6 +109,28 @@ Feature: Download a work
   When I go to the work page with title "Hàs curly’d quotes"
     And I follow "EPUB"
   # Then...
+
+  Scenario: disable guest download
+
+  Given I am logged in as "author"
+    And I post the work "NaNoWriMo"
+    And I am logged out
+  When I view the work "NaNoWriMo"
+  Then I should see "NaNoWriMo"
+    And I should see "author" within "#main"
+  When I follow "HTML"
+  Then I should see "NaNoWriMo"
+    And I should not see "Comments"
+  When guest downloading is off
+    And I am logged out as an admin
+  When I view the work "NaNoWriMo"
+    And I follow "PDF"
+  Then I should see "Due to current high load"
+  When I am logged in as a random user
+    And I view the work "NaNoWriMo"
+  Then I should see "Comments"
+  When I follow "MOBI"
+  Then I should not see "Due to current high load"
 
   @wip
   Scenario: Download chaptered works doesn't bomb
