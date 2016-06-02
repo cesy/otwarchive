@@ -6,12 +6,7 @@ Feature: Private bookmarks
       
   Scenario: private bookmarks on public and restricted works
 
-    Given the following activated users exist
-      | login           |
-      | workauthor      |
-      | bookmarker      |
-      | otheruser       |
-      And a fandom exists with name: "Stargate SG-1", canonical: true
+    Given a fandom exists with name: "Stargate SG-1", canonical: true
       And I am logged in as "workauthor"
       And I post the locked work "Secret Masterpiece"
       And I post the work "Public Masterpiece"
