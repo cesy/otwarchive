@@ -4,10 +4,11 @@ Feature: Create bookmarks
   As a humble user
   I want to bookmark some works
 
-Scenario: Create a bookmark
-  Given I am logged in as "first_bookmark_user"
+  Scenario: Create a bookmark
+
+    Given I am logged in as "first_bookmark_user"
     When I am on first_bookmark_user's user page 
-      Then I should see "have anything posted under this name yet"
+      Then I should see "You don't have anything posted under this name yet"
     When I am logged in as "another_bookmark_user"
       And I post the work "Revenge of the Sith"
       When I go to the bookmarks page
@@ -33,21 +34,85 @@ Scenario: Create a bookmark
       And I go to first_bookmark_user's user page 
     Then I should not see "You don't have anything posted under this name yet"
       And I should see "Revenge of the Sith"
+
+  Scenario: Create a private bookmark
+
+    Given I am logged in as "other_bookmark_user"
+      And I post the work "Revenge of the Sith"
+      And I am logged in as "private_bookmark_user"
+      And I view the work "Revenge of the Sith"
+      And I follow "Bookmark"
+      And I fill in "bookmark_notes" with "I liked this story"
+      And I fill in "bookmark_tag_string" with "This is a tag, and another tag,"
+      And I check "bookmark_rec"
+      And I press "Create"
     When I edit the bookmark for "Revenge of the Sith"
       And I check "bookmark_private"
       And I press "Edit"
     Then I should see "Bookmark was successfully updated"
     When I go to the bookmarks page
     Then I should not see "I liked this story"
-    When I go to first_bookmark_user's bookmarks page
+    When I go to private_bookmark_user's bookmarks page
     Then I should see "I liked this story"
     
     # privacy check for the private bookmark '
-    When I am logged in as "another_bookmark_user"
+    When I am logged in as "other_bookmark_user"
       And I go to the bookmarks page
     Then I should not see "I liked this story"
-    When I go to first_bookmark_user's user page
+    When I go to private_bookmark_user's user page
     Then I should not see "I liked this story"
+    
+  @bookmark_fandom_error
+  Scenario: Create a bookmark on an external work (fandom error)
+    Given basic tags
+      And I am logged in as "ext_fandom_bookmark_user"
+    When I go to ext_fandom_bookmark_user's bookmarks page
+    Then I should not see "Stuck with You"
+    When I follow "Bookmark External Work"
+      And I fill in "bookmark_external_author" with "Sidra"
+      And I fill in "bookmark_external_title" with "Stuck with You"
+      And I fill in "bookmark_external_url" with "http://test.sidrasue.com/short.html"
+      And I press "Create"
+    Then I should see "Fandom tag is required"
+    When I fill in "bookmark_external_fandom_string" with "Popslash"
+      And I press "Create"
+    Then I should see "This work isn't hosted on the Archive"
+    When I go to ext_fandom_bookmark_user's bookmarks page
+    Then I should see "Stuck with You"
+
+  @bookmark_url_error
+  Scenario: Create a bookmark on an external work (url error)
+    Given I am logged in as "ext_url_bookmark_user"
+      And the default ratings exist
+    When I go to ext_url_bookmark_user's bookmarks page
+    Then I should not see "Stuck with Me"
+    When I follow "Bookmark External Work"
+      And I fill in "bookmark_external_author" with "Sidra"
+      And I fill in "bookmark_external_title" with "Stuck with Me"
+      And I fill in "bookmark_external_fandom_string" with "Popslash"
+      And I press "Create"
+    Then I should see "does not appear to be a valid URL"
+    When I fill in "bookmark_external_url" with "http://test.sidrasue.com/short.html"
+      And I press "Create"
+    Then I should see "This work isn't hosted on the Archive"
+    When I go to ext_url_bookmark_user's bookmarks page
+    Then I should see "Stuck with Me"
+    
+    # edit external bookmark
+    When I follow "Edit"
+    Then I should see "Editing bookmark for Stuck with Me"
+    When I fill in "Notes" with "I wish this author would join AO3"
+      And I fill in "Your tags" with "WIP"
+      And I press "Update"
+    Then I should see "Bookmark was successfully updated"
+    
+    # delete external bookmark
+    When I follow "Delete"
+    Then I should see "Are you sure you want to delete"
+      And I should see "Stuck with Me"
+    When I press "Yes, Delete Bookmark"
+    Then I should see "Bookmark was successfully deleted."
+      And I should not see "Stuck with Me"
       
   Scenario: Create bookmarks and recs on restricted works, check how they behave from various access points
     Given the following activated users exist

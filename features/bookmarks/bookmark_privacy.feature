@@ -6,10 +6,10 @@ Feature: Private bookmarks
       
   Scenario: private bookmarks on public and restricted works
 
-    Given a fandom exists with name: "Stargate SG-1", canonical: true
+    Given a fandom exists with name: "Hikaru no Go", canonical: true
       And I am logged in as "workauthor"
-      And I post the locked work "Secret Masterpiece"
-      And I post the work "Public Masterpiece"
+      And I post the locked work "Secret Masterpiece" with fandom "Hikaru no Go"
+      And I post the work "Public Masterpiece" with fandom "Hikaru no Go"
     When I am logged in as "bookmarker"
       And I view the work "Secret Masterpiece"
       And I follow "Bookmark"
@@ -115,7 +115,7 @@ Feature: Private bookmarks
       And I should not see "bookmarker"
 
     # Private bookmarks should not show on tag's page
-    When I go to the bookmarks tagged "Stargate SG-1"
+    When I go to the bookmarks tagged "Hikaru no Go"
     Then I should not see "Secret Masterpiece"
       And I should see "Public Masterpiece"
       And I should not see "bookmarker"
