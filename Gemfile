@@ -144,7 +144,6 @@ group :test do
   gem 'simplecov', '~> 0.12.0'
   gem 'coveralls', '~> 0.8.12'
   gem 'email_spec', '1.6.0'
-  gem 'coveralls', :require => false
   gem 'parallel_tests'
 end
 
